@@ -1,0 +1,36 @@
+image: node:14-alpine
+
+stages:
+  - test
+  - deploy
+
+before_script:
+  - yarn
+  - yarn global add vercel
+
+Tests:
+  stage: test
+  script:
+    - yarn lint
+
+Deploy - STG:
+  stage: deploy
+  environment:
+    name: staging
+    url: https://wefloc-front-rimiti.vercel.app
+  except:
+    - master
+  script:
+    - yarn build
+    - vercel deploy -t ${VERCEL_TOKEN} --prod
+
+Deploy - PRD:
+  stage: deploy
+  environment:
+    name: staging
+    url: https://www.wefloc.com
+  only:
+    - master
+  script:
+    - yarn build
+    - vercel deploy -t ${VERCEL_TOKEN} --prod
